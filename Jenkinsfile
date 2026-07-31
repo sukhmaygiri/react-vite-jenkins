@@ -3,7 +3,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "sukhmay/react-vite-jenkins:v1"
+        IMAGE_NAME = "sukhmay/react-vite-jenkins"
+        IMAGE_TAG = "${BUILD_NUMBER}"
         KUBECONFIG = "/var/lib/jenkins/kubeconfig"
     }
 
@@ -29,7 +30,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $DOCKER_IMAGE .'
+                sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
             }
         }
 
@@ -44,7 +45,7 @@ pipeline {
                 ]) {
                     sh '''
                     echo $PASSWORD | docker login -u $USERNAME --password-stdin
-                    docker push $DOCKER_IMAGE
+                    docker push $IMAGE_NAME:$IMAGE_TAG
                     '''
                 }
             }
@@ -62,9 +63,14 @@ pipeline {
                 echo "===== Kubernetes Nodes ====="
                 kubectl get nodes
 
-                echo "===== Deploying Application ====="
-                kubectl apply -f k8s/deployment.yaml
-                kubectl apply -f k8s/service.yaml
+                echo "===== Updating Deployment Image ====="
+                kubectl set image deployment/react-vite-deployment react-vite=$IMAGE_NAME:$IMAGE_TAG
+
+                echo "===== Waiting for Rollout ====="
+                kubectl rollout status deployment/react-vite-deployment
+
+                echo "===== Services ====="
+                kubectl get svc
 
                 echo "===== Pods Status ====="
                 kubectl get pods
