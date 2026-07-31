@@ -1,8 +1,10 @@
 pipeline {
+
     agent any
 
     environment {
         DOCKER_IMAGE = "sukhmay/react-vite-jenkins:v1"
+        KUBECONFIG = "/var/lib/jenkins/kubeconfig"
     }
 
     stages {
@@ -33,7 +35,13 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub',
+                        usernameVariable: 'USERNAME',
+                        passwordVariable: 'PASSWORD'
+                    )
+                ]) {
                     sh '''
                     echo $PASSWORD | docker login -u $USERNAME --password-stdin
                     docker push $DOCKER_IMAGE
@@ -45,10 +53,33 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 sh '''
+                echo "===== Current User ====="
+                whoami
+
+                echo "===== AWS Identity ====="
+                aws sts get-caller-identity
+
+                echo "===== Kubernetes Nodes ====="
+                kubectl get nodes
+
+                echo "===== Deploying Application ====="
                 kubectl apply -f k8s/deployment.yaml
                 kubectl apply -f k8s/service.yaml
+
+                echo "===== Pods Status ====="
+                kubectl get pods
                 '''
             }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Deployment Successful'
+        }
+
+        failure {
+            echo '❌ Deployment Failed'
         }
     }
 }
