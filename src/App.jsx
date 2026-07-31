@@ -16,9 +16,13 @@ function App() {
           <img src={viteLogo} className="vite" alt="Vite logo" />
         </div>
         <div>
-          <h1>Get started</h1>
-          <p>
+          {/*<h1>Get started</h1>*/}
+          <h1>🚀 Jenkins CI/CD Pipeline on Amazon EKS</h1>
+          {/*<p>
             Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
+          </p>*/}
+          <p>
+            Successfully deployed using Jenkins, Docker, Kubernetes, and Amazon EKS.
           </p>
         </div>
         <button
