@@ -63,17 +63,24 @@ pipeline {
                 echo "===== Kubernetes Nodes ====="
                 kubectl get nodes
 
+                echo "===== Applying Kubernetes Manifests ====="
+                kubectl apply -f k8s/deployment.yaml
+                kubectl apply -f k8s/service.yaml
+
                 echo "===== Updating Deployment Image ====="
                 kubectl set image deployment/react-vite-deployment react-vite=$IMAGE_NAME:$IMAGE_TAG
 
                 echo "===== Waiting for Rollout ====="
                 kubectl rollout status deployment/react-vite-deployment
 
+                echo "===== Deployment ====="
+                kubectl get deployment react-vite-deployment
+
                 echo "===== Services ====="
                 kubectl get svc
 
-                echo "===== Pods Status ====="
-                kubectl get pods
+                echo "===== Pods ====="
+                kubectl get pods -o wide
                 '''
             }
         }
