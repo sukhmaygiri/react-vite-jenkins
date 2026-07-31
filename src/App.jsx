@@ -22,7 +22,7 @@ function App() {
             Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
           </p>*/}
           <p>
-            Successfully deployed using Jenkins, Docker, Kubernetes, and Amazon EKS.!!!
+            Successfully deployed using Jenkins, Docker, Kubernetes, and Amazon EKS.
           </p>
         </div>
         <button
