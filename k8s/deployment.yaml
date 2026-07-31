@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-vite-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: react-vite
+  template:
+    metadata:
+      labels:
+        app: react-vite
+    spec:
+      containers:
+      - name: react-vite
+        image: sukhmay/react-vite-jenkins:v1
+        ports:
+        - containerPort: 4173
